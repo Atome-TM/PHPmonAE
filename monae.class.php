@@ -48,6 +48,26 @@ class MonAE
 	    $return = $this->getUnique("customers", $_ID);
 		return $return;
     }
+
+    public function newCustomer($options = array())
+    {
+        if($this->_format == "xml")
+        {
+            $creation = "<customers>";
+            foreach($options as $key => $value)
+            {
+                $creation .= "<$key>$value</$key>";
+            }
+            $creation .= "</customers>";
+        }
+        if($this->_format == "json")
+        {
+            $creation = json_encode($options);
+        }
+
+        $return = $this->newItem("customers", $creation);
+        return $return;
+    }
     
     public function getQuotes($options = array())
     {
@@ -167,6 +187,22 @@ class MonAE
 		curl_setopt($curl, CURLOPT_COOKIESESSION, true);
 		$return = curl_exec($curl);
 		curl_close($curl);
+    }
+
+    private function newItem($name, $creation = "")
+    {
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, 'https://www.facturation.pro/firms/'.$this->_firmid.'/'.$name.'.'.$this->_format);
+        curl_setopt($curl, CURLOPT_POST, true);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $creation);
+        curl_setopt($curl, CURLOPT_USERPWD, $this->_login.":".$this->_password);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_COOKIESESSION, true);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-Type: application/".$this->_format));
+                 
+        $return = curl_exec($curl);
+        curl_close($curl);  
+        return $return;
     }
 }
 ?>
