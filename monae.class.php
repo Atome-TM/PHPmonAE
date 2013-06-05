@@ -10,7 +10,7 @@ class MonAE
     
     /*
      * Constructeur
-     * Constructeur
+     * 
      *  
      */
     public function __construct($_firmid, $_login, $_password, $_format = "json")
@@ -42,6 +42,10 @@ class MonAE
 	    $this->_format = $_format;
     }
     
+    /**
+     *  CUSTOMERS
+     *
+     */
     public function getCustomers($options = array())
     {
 	   	return $this->getListe("customers", $options);
@@ -54,23 +58,13 @@ class MonAE
 
     public function newCustomer($options = array())
     {
-        if($this->_format == "xml")
-        {
-            $creation = "<customers>";
-            foreach($options as $key => $value)
-            {
-                $creation .= "<$key>$value</$key>";
-            }
-            $creation .= "</customers>";
-        }
-        if($this->_format == "json")
-        {
-            $creation = json_encode($options);
-        }
-
-        return $this->newItem("customers", $creation);
+        return $this->newItem("customer","customers", $options);
     }
     
+    /**
+     * Quotes
+     *
+     */
     public function getQuotes($options = array())
     {
 	   	return $this->getListe("quotes", $options);
@@ -94,7 +88,16 @@ class MonAE
 			return $return;
 		}
     }
+
+    public function newQuote($options = array())
+    {
+        return $this->newItem("quote","quotes", $options);
+    }
     
+    /**
+     * Invoices
+     *
+     */
     public function getInvoices($options = array())
     {
 	   	return $this->getListe("invoices", $options);
@@ -118,7 +121,16 @@ class MonAE
 			return $return;
 		}
     }
+
+    public function newInvoice($options = array())
+    {
+        return $this->newItem("invoice","invoices", $options);
+    }
     
+    /**
+     * Suppliers
+     *
+     */
     public function getSuppliers($options = array())
     {
 	    return $this->getListe("suppliers", $options);
@@ -128,7 +140,16 @@ class MonAE
     {
 	    return $this->getUnique("suppliers", $_ID);
     }
+
+    public function newSupplier($options = array())
+    {
+        return $this->newItem("supplier","suppliers", $options);
+    }
     
+    /**
+     * Purchases
+     *
+     */
     public function getPurchases($options = array())
     {
 	    return $this->getListe("purchases", $options);
@@ -138,7 +159,16 @@ class MonAE
     {
 	    return $this->getUnique("purchases", $_ID);
     }
+
+    public function newPurchase($options = array())
+    {
+        return $this->newItem("purchase","purchases", $options);
+    }
     
+    /**
+     * Mains functions
+     *
+     */
     private function getListe($name, $options = array())
     {
     	$url = "";
@@ -184,10 +214,33 @@ class MonAE
 		curl_close($curl);
     }
 
-    private function newItem($name, $creation = "")
+    private function newItem($name, $plurial, $options = array())
     {
+        if($this->_format == "xml")
+        {
+            $creation = "<$name>";
+            foreach($options as $key => $value)
+            {
+                $creation .= "<$key>";
+                if(is_array($value)) {
+                    foreach($value as $key2 => $value2)
+                    {
+                        $creation .= "<$key2>$value2</$key2>";
+                    }
+                }
+                else
+                {
+                    $creation .= $value;
+                }
+                $creation .= "</$key>";
+            }
+            $creation .= "</$name>";
+        } else if($this->_format == "json") {
+            $creation = json_encode($options);
+        }
+
         $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, 'https://www.facturation.pro/firms/'.$this->_firmid.'/'.$name.'.'.$this->_format);
+        curl_setopt($curl, CURLOPT_URL, 'https://www.facturation.pro/firms/'.$this->_firmid.'/'.$plurial.'.'.$this->_format);
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $creation);
         curl_setopt($curl, CURLOPT_USERPWD, $this->_login.":".$this->_password);
@@ -199,6 +252,8 @@ class MonAE
         curl_close($curl);  
         return $return;
     }
+
+
 }
 
 ?>
