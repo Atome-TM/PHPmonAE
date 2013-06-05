@@ -8,6 +8,11 @@ class MonAE
     private $_password;
     private $_format;
     
+    /*
+     * Constructeur
+     * Constructeur
+     *  
+     */
     public function __construct($_firmid, $_login, $_password, $_format = "json")
     {
        	$this->set_firmid($_firmid);
@@ -39,14 +44,12 @@ class MonAE
     
     public function getCustomers($options = array())
     {
-	   	$return = $this->getListe("customers", $options);
-		return $return;
+	   	return $this->getListe("customers", $options);
     }
     
     public function getCustomer($_ID)
     {
-	    $return = $this->getUnique("customers", $_ID);
-		return $return;
+	    return $this->getUnique("customers", $_ID);
     }
 
     public function newCustomer($options = array())
@@ -65,20 +68,17 @@ class MonAE
             $creation = json_encode($options);
         }
 
-        $return = $this->newItem("customers", $creation);
-        return $return;
+        return $this->newItem("customers", $creation);
     }
     
     public function getQuotes($options = array())
     {
-	   	$return = $this->getListe("quotes", $options);
-		return $return;
+	   	return $this->getListe("quotes", $options);
     }
     
     public function getQuote($_ID)
     {
-	    $return = $this->getUnique("quotes", $_ID);
-		return $return;
+	    return $this->getUnique("quotes", $_ID);
     }
     
     public function getQuotePDF($_ID, $afficher = false)
@@ -97,14 +97,12 @@ class MonAE
     
     public function getInvoices($options = array())
     {
-	   	$return = $this->getListe("invoices", $options);
-		return $return;
+	   	return $this->getListe("invoices", $options);
     }
     
     public function getInvoice($_ID)
     {
-	    $return = $this->getUnique("invoices", $_ID);
-		return $return;
+	    return $this->getUnique("invoices", $_ID);
     }
     
     public function getInvoicePDF($_ID, $afficher = false)
@@ -123,26 +121,22 @@ class MonAE
     
     public function getSuppliers($options = array())
     {
-	    $return = $this->getListe("suppliers", $options);
-		return $return;
+	    return $this->getListe("suppliers", $options);
     }
     
     public function getSupplier($_ID)
     {
-	    $return = $this->getUnique("suppliers", $_ID);
-		return $return;
+	    return $this->getUnique("suppliers", $_ID);
     }
     
     public function getPurchases($options = array())
     {
-	    $return = $this->getListe("purchases", $options);
-		return $return;
+	    return $this->getListe("purchases", $options);
     }
     
     public function getPurchase($_ID)
     {
-	    $return = $this->getUnique("purchases", $_ID);
-		return $return;
+	    return $this->getUnique("purchases", $_ID);
     }
     
     private function getListe($name, $options = array())
@@ -153,7 +147,6 @@ class MonAE
 	    }
 	    
 	    $curl = curl_init();
-
 	    curl_setopt($curl, CURLOPT_URL, "https://www.facturation.pro/firms/".$this->_firmid."/".$name.".".$this->_format . $url);
 		curl_setopt($curl, CURLOPT_USERPWD, $this->_login.":".$this->_password);
 		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -166,6 +159,8 @@ class MonAE
     
     private function getUnique($name, $_ID)
     {
+        if(!$_ID) { throw new MonaeException("Vous avez oublié l'ID !"); }
+
 	    $curl = curl_init();
 	    curl_setopt($curl, CURLOPT_URL, "https://www.facturation.pro/firms/".$this->_firmid."/".$name."/".$_ID.".".$this->_format);
 		curl_setopt($curl, CURLOPT_USERPWD, $this->_login.":".$this->_password);
