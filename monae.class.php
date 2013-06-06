@@ -475,8 +475,6 @@ class MonAE
         curl_close($curl);  
         return $return;
     }
-
-
 }
 
 ?>
