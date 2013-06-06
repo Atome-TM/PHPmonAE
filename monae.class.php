@@ -71,6 +71,9 @@ class MonAE
 
     public function set_type($_type)
     {
+        $type = strtolower($_type);
+        $type = str_replace(array('_','-',' '), "", $_type);
+        
         if($_type !== "array" && $_type !== "object" && $_type !== "objet" && $_type !== false) 
             throw new MonaeException('Le type de sortie en "'.$_type.'" n\'est pas autorisé. Types autorisés : array, object (ou objet) et false.');
         $this->_type = $_type;
