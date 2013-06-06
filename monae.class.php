@@ -21,7 +21,7 @@ class MonAE
         $this->set_login($_login);
         $this->set_password($_password);    
         $this->set_format($_format);    
-        $this->set_typeOutput($_type);    
+        $this->set_type($_type);    
     }    
     
     /**
@@ -69,7 +69,7 @@ class MonAE
         $this->_format = $_format;
     }
 
-    public function set_typeOutput($_type)
+    public function set_type($_type)
     {
         if($_type !== "array" && $_type !== "object" && $_type !== "objet" && $_type !== false) 
             throw new MonaeException('Le type de sortie en "'.$_type.'" n\'est pas autorisé. Types autorisés : array, object (ou objet) et false.');
@@ -344,9 +344,64 @@ class MonAE
     
     
     /**
-     * Categories
+     * Produits
      */
      
+    /**
+     * Get the list of all products that corresponds with options
+     * 
+     * @param array $options
+     *          String ref
+     *          String title
+     *          int api_id
+     *          int api_custom
+     */
+    public function getProducts($options = array())
+    {
+        $return = $this->getListe("products", $options);
+        return $return;
+    }    
+    
+    /**
+     * Get a product with the $_ID
+     * 
+     * @param int $_ID
+     */
+    public function getProduct($_ID)
+    {
+        $return = $this->getUnique("products", $_ID);
+        return $return;
+    }    
+    
+    /**
+     * Create a new product with options values
+     * 
+     * @param array $options
+     *          String title
+     *          int status
+     */
+    public function newCategory($options = array())
+    {
+        if($this->_format == "xml")
+        {
+            $creation = "<category>";
+            foreach($options as $key => $value)
+            {
+                $creation .= "<$key>$value</$key>";
+            }
+            $creation .= "</category>";
+        }
+        if($this->_format == "json")
+        {
+            $creation = json_encode($options);
+        }
+
+        return $this->newItem("products", $creation);
+    }
+    
+    /**
+     * Categories
+     */
      
     /**
      * Get the list of all categories that corresponds with options
@@ -374,7 +429,7 @@ class MonAE
     }    
     
     /**
-     * Create a new category with $options values
+     * Create a new category with options values
      * 
      * @param array $options
      *          String title
@@ -500,7 +555,9 @@ class MonAE
     private function get_output($return)
     {
         if($this->_type === false)
+        {
             return $return;
+        }
         else
         {
             $array = $this->_type === "array" ? true : false;
