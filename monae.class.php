@@ -6,19 +6,22 @@ class MonAE
     private $_firmid;
     private $_login;
     private $_password;
+
     private $_format;
+    private $_type;
     
     /*
      * Constructeur
      * 
      *  
      */
-    public function __construct($_firmid, $_login, $_password, $_format = "json")
+    public function __construct($_firmid, $_login, $_password, $_format = "json", $_type = false)
     {
         $this->set_firmid($_firmid);
         $this->set_login($_login);
         $this->set_password($_password);    
         $this->set_format($_format);    
+        $this->set_typeOutput($_type);    
     }    
     
     /**
@@ -61,8 +64,16 @@ class MonAE
      */ 
     public function set_format($_format)
     {
-        if($_format != "json" AND $_format != "xml") { throw new MonaeException('Le format "'.$_format.'" n\'est pas autorisé. Formats autorisés : xml ou json.'); }
+        if($_format != "json" AND $_format != "xml") 
+            throw new MonaeException('Le format "'.$_format.'" n\'est pas autorisé. Formats autorisés : xml ou json.');
         $this->_format = $_format;
+    }
+
+    public function set_typeOutput($_type)
+    {
+        if($_type !== "array" && $_type !== "object" && $_type !== "objet" && $_type !== false) 
+            throw new MonaeException('Le type de sortie en "'.$_type.'" n\'est pas autorisé. Types autorisés : array, object (ou objet) et false.');
+        $this->_type = $_type;
     }
     
     /**
@@ -71,7 +82,7 @@ class MonAE
      */
     
     /**
-     * Get the list of all customers which corresponding with options
+     * Get the list of all customers that corresponds with options
      * 
      * @param array $options
      *          int page
@@ -402,12 +413,28 @@ class MonAE
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, "https://www.facturation.pro/firms/".$this->_firmid."/".$name.".".$this->_format . $url);
         curl_setopt($curl, CURLOPT_USERPWD, $this->_login.":".$this->_password);
+        curl_setopt($curl, CURLOPT_SSLVERSION, 3);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_COOKIESESSION, true);
         $return = curl_exec($curl);
         curl_close($curl);
         
-        return $return;
+
+        if($this->_type === false)
+            return $return;
+        else
+        {
+            $array = $this->_type === "array" ? true : false;
+
+            if($this->_format === "xml")
+            {
+                $return = new SimpleXmlElement($return);
+                return json_decode(json_encode($return),$array);
+            }
+            elseif($this->_format === "json")
+                return json_decode($return,$array);
+        }
     }
     
     private function getUnique($name, $_ID)
@@ -417,12 +444,27 @@ class MonAE
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, "https://www.facturation.pro/firms/".$this->_firmid."/".$name."/".$_ID.".".$this->_format);
         curl_setopt($curl, CURLOPT_USERPWD, $this->_login.":".$this->_password);
+        curl_setopt($curl, CURLOPT_SSLVERSION, 3);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_COOKIESESSION, true);
         $return = curl_exec($curl);
         curl_close($curl);
         
-        return $return;
+        if($this->_type === false)
+            return $return;
+        else
+        {
+            $array = $this->_type === "array" ? true : false;
+
+            if($this->_format === "xml")
+            {
+                $return = new SimpleXmlElement($return);
+                return json_decode(json_encode($return),$array);
+            }
+            elseif($this->_format === "json")
+                return json_decode($return,$array);
+        }
     }
     
     private function getPDF($name, $_ID){
@@ -431,6 +473,8 @@ class MonAE
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, "https://www.facturation.pro/firms/".$this->_firmid."/".$name."/".$_ID.".pdf");
         curl_setopt($curl, CURLOPT_USERPWD, $this->_login.":".$this->_password);
+        curl_setopt($curl, CURLOPT_SSLVERSION, 3);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_COOKIESESSION, true);
         $return = curl_exec($curl);
@@ -469,6 +513,8 @@ class MonAE
         curl_setopt($curl, CURLOPT_USERPWD, $this->_login.":".$this->_password);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_COOKIESESSION, true);
+        curl_setopt($curl, CURLOPT_SSLVERSION, 3);
+        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-Type: application/".$this->_format));
                  
         $return = curl_exec($curl);
@@ -476,5 +522,4 @@ class MonAE
         return $return;
     }
 }
-
 ?>
