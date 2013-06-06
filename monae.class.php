@@ -165,6 +165,59 @@ class MonAE
         return $this->newItem("purchase","purchases", $options);
     }
     
+    
+    ////        
+    // CATEGORIES //
+                ////
+    /*
+    @getCategories( array $options )
+        ~ Get the list of all categories which corresponding with options
+    # options : 
+        int page
+        String title
+        int status
+    */
+    public function getCategories($options = array())
+    {
+	    $return = $this->getListe("categories", $options);
+		return $return;
+    }
+
+    /*
+    @getCategories( int $_ID )
+        ~ Get the category with the $_ID
+    */
+    public function getCategory($_ID)
+    {
+	    $return = $this->getUnique("categories", $_ID);
+		return $return;
+    }
+
+    /*
+    @getCategories( array $options )
+        ~ Create a new category with $options values
+    # options :
+        String title
+        int status
+    */
+    public function newCategory($options = array())
+    {
+        if($this->_format == "xml")
+        {
+            $creation = "<category>";
+            foreach($options as $key => $value)
+            {
+                $creation .= "<$key>$value</$key>";
+            }
+            $creation .= "</category>";
+        }
+        if($this->_format == "json")
+        {
+            $creation = json_encode($options);
+        }
+
+        return $this->newItem("categories", $creation);
+    }
     /**
      * Mains functions
      *
