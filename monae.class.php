@@ -22,7 +22,7 @@ class MonAE
         $this->set_password($_password);    
         $this->set_format($_format);    
         $this->set_type($_type);    
-    }    
+    }
     
     /**
      * Set the firm ID
@@ -33,7 +33,7 @@ class MonAE
     {
         if(!$_firmid) { throw new MonaeException('$_firmid doit être renseigné.'); }
         $this->_firmid = $_firmid;
-    }     
+    }
     
     /**
      * Set the login access
@@ -44,7 +44,7 @@ class MonAE
     {
         if(!$_login) { throw new MonaeException('$_login doit être renseigné.'); }
         $this->_login = $_login;
-    }    
+    }
     
     /**
      * Set the password access
@@ -66,16 +66,20 @@ class MonAE
     {
         if($_format != "json" AND $_format != "xml") 
             throw new MonaeException('Le format "'.$_format.'" n\'est pas autorisé. Formats autorisés : xml ou json.');
+        
         $this->_format = $_format;
     }
 
     public function set_type($_type)
-    {
-        $type = strtolower($_type);
-        $type = str_replace(array('_','-',' '), "", $_type);
+    {        
+        if($_type !== "array" && $_type !== "object" && $_type !== false)
+            throw new MonaeException('"'.$_type.'" n\'est pas autorisé. False : retournera la reponse JSON ou XML. "array" pour avoir un tableau, "object" pour un avoir un objet.');
         
-        if($_type !== "array" && $_type !== "object" && $_type !== "objet" && $_type !== false) 
-            throw new MonaeException('Le type de sortie en "'.$_type.'" n\'est pas autorisé. Types autorisés : array, object (ou objet) et false.');
+        if($_type !== false) {
+            $_type = strtolower($_type);
+            $_type = str_replace(array('_','-',' '), "", $_type);
+        }
+        
         $this->_type = $_type;
     }
     
@@ -374,7 +378,7 @@ class MonAE
     {
         $return = $this->getUnique("products", $_ID);
         return $return;
-    }    
+    }
     
     /**
      * Create a new product with options values
@@ -383,23 +387,9 @@ class MonAE
      *          String title
      *          int status
      */
-    public function newCategory($options = array())
+    public function newProduct($options = array())
     {
-        if($this->_format == "xml")
-        {
-            $creation = "<category>";
-            foreach($options as $key => $value)
-            {
-                $creation .= "<$key>$value</$key>";
-            }
-            $creation .= "</category>";
-        }
-        if($this->_format == "json")
-        {
-            $creation = json_encode($options);
-        }
-
-        return $this->newItem("products", $creation);
+        return $this->newItem("product","products", $options);
     }
     
     /**
@@ -418,7 +408,7 @@ class MonAE
     {
         $return = $this->getListe("categories", $options);
         return $return;
-    }    
+    }
     
     /**
      * Get a category with the $_ID
@@ -429,7 +419,7 @@ class MonAE
     {
         $return = $this->getUnique("categories", $_ID);
         return $return;
-    }    
+    }
     
     /**
      * Create a new category with options values
@@ -440,21 +430,7 @@ class MonAE
      */
     public function newCategory($options = array())
     {
-        if($this->_format == "xml")
-        {
-            $creation = "<category>";
-            foreach($options as $key => $value)
-            {
-                $creation .= "<$key>$value</$key>";
-            }
-            $creation .= "</category>";
-        }
-        if($this->_format == "json")
-        {
-            $creation = json_encode($options);
-        }
-
-        return $this->newItem("categories", $creation);
+        return $this->newItem("category","categories", $options);
     }
     
     /**
@@ -478,7 +454,7 @@ class MonAE
         $return = curl_exec($curl);
         curl_close($curl);
         
-        return $this->get_output($return);
+        return $this->getOutput($return);
     }
     
     private function getUnique($name, $_ID)
@@ -495,7 +471,7 @@ class MonAE
         $return = curl_exec($curl);
         curl_close($curl);
 
-        return $this->get_output($return);
+        return $this->getOutput($return);
     }
     
     private function getPDF($name, $_ID){
@@ -549,13 +525,13 @@ class MonAE
         curl_setopt($curl, CURLOPT_SSLVERSION, 3);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-Type: application/".$this->_format));
-                 
+
         $return = curl_exec($curl);
-        curl_close($curl);  
-        return $this->get_output($return);
+        curl_close($curl);
+        return $this->getOutput($return);
     }
 
-    private function get_output($return)
+    private function getOutput($return)
     {
         if($this->_type === false)
         {
@@ -567,11 +543,10 @@ class MonAE
 
             if($this->_format === "xml")
             {
-                $return = new SimpleXmlElement($return);
-                return json_decode(json_encode($return),$array);
+                $return = json_encode(new SimpleXmlElement($return));
             }
-            elseif($this->_format === "json")
-                return json_decode($return,$array);
+
+            return json_decode($return,$array);
         }
     }
 }
