@@ -420,21 +420,7 @@ class MonAE
         $return = curl_exec($curl);
         curl_close($curl);
         
-
-        if($this->_type === false)
-            return $return;
-        else
-        {
-            $array = $this->_type === "array" ? true : false;
-
-            if($this->_format === "xml")
-            {
-                $return = new SimpleXmlElement($return);
-                return json_decode(json_encode($return),$array);
-            }
-            elseif($this->_format === "json")
-                return json_decode($return,$array);
-        }
+        return $this->get_output($return);
     }
     
     private function getUnique($name, $_ID)
@@ -450,21 +436,8 @@ class MonAE
         curl_setopt($curl, CURLOPT_COOKIESESSION, true);
         $return = curl_exec($curl);
         curl_close($curl);
-        
-        if($this->_type === false)
-            return $return;
-        else
-        {
-            $array = $this->_type === "array" ? true : false;
 
-            if($this->_format === "xml")
-            {
-                $return = new SimpleXmlElement($return);
-                return json_decode(json_encode($return),$array);
-            }
-            elseif($this->_format === "json")
-                return json_decode($return,$array);
-        }
+        return $this->get_output($return);
     }
     
     private function getPDF($name, $_ID){
@@ -479,6 +452,8 @@ class MonAE
         curl_setopt($curl, CURLOPT_COOKIESESSION, true);
         $return = curl_exec($curl);
         curl_close($curl);
+       
+       return $return;
     }
 
     private function newItem($name, $plurial, $options = array())
@@ -519,7 +494,25 @@ class MonAE
                  
         $return = curl_exec($curl);
         curl_close($curl);  
-        return $return;
+        return $this->get_output($return);
+    }
+
+    private function get_output($return)
+    {
+        if($this->_type === false)
+            return $return;
+        else
+        {
+            $array = $this->_type === "array" ? true : false;
+
+            if($this->_format === "xml")
+            {
+                $return = new SimpleXmlElement($return);
+                return json_decode(json_encode($return),$array);
+            }
+            elseif($this->_format === "json")
+                return json_decode($return,$array);
+        }
     }
 }
 ?>
