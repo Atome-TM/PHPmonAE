@@ -7,7 +7,6 @@ class MonAE
     private $_login;
     private $_password;
 
-    private $_format;
     private $_type;
     
     /*
@@ -15,12 +14,11 @@ class MonAE
      * 
      *  
      */
-    public function __construct($_firmid, $_login, $_password, $_format = "json", $_type = false)
+    public function __construct($_firmid, $_login, $_password, $_type = false)
     {
         $this->set_firmid($_firmid);
         $this->set_login($_login);
         $this->set_password($_password);    
-        $this->set_format($_format);    
         $this->set_type($_type);    
     }
     
@@ -55,19 +53,6 @@ class MonAE
     {
         if(!$_password) { throw new MonaeException('$_password doit être renseigné.'); }
         $this->_password = $_password;
-    }
-    
-    /**
-     * Set the return format
-     * 
-     * @param String $_format
-     */ 
-    public function set_format($_format)
-    {
-        if($_format != "json" AND $_format != "xml") 
-            throw new MonaeException('Le format "'.$_format.'" n\'est pas autorisé. Formats autorisés : xml ou json.');
-        
-        $this->_format = $_format;
     }
 
     public function set_type($_type)
@@ -445,7 +430,7 @@ class MonAE
         }
         
         $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, "https://www.facturation.pro/firms/".$this->_firmid."/".$name.".".$this->_format . $url);
+        curl_setopt($curl, CURLOPT_URL, "https://www.facturation.pro/firms/".$this->_firmid."/".$name.".json" . $url);
         curl_setopt($curl, CURLOPT_USERPWD, $this->_login.":".$this->_password);
         curl_setopt($curl, CURLOPT_SSLVERSION, 3);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
@@ -462,7 +447,7 @@ class MonAE
         if(!$_ID) { throw new MonaeException("Vous avez oublié l'ID !"); }
 
         $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, "https://www.facturation.pro/firms/".$this->_firmid."/".$name."/".$_ID.".".$this->_format);
+        curl_setopt($curl, CURLOPT_URL, "https://www.facturation.pro/firms/".$this->_firmid."/".$name."/".$_ID.".json");
         curl_setopt($curl, CURLOPT_USERPWD, $this->_login.":".$this->_password);
         curl_setopt($curl, CURLOPT_SSLVERSION, 3);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
@@ -492,31 +477,10 @@ class MonAE
 
     private function newItem($name, $plurial, $options = array())
     {
-        if($this->_format == "xml")
-        {
-            $creation = "<$name>";
-            foreach($options as $key => $value)
-            {
-                $creation .= "<$key>";
-                if(is_array($value)) {
-                    foreach($value as $key2 => $value2)
-                    {
-                        $creation .= "<$key2>$value2</$key2>";
-                    }
-                }
-                else
-                {
-                    $creation .= $value;
-                }
-                $creation .= "</$key>";
-            }
-            $creation .= "</$name>";
-        } else if($this->_format == "json") {
-            $creation = json_encode($options);
-        }
+        $creation = json_encode($options);
 
         $curl = curl_init();
-        curl_setopt($curl, CURLOPT_URL, 'https://www.facturation.pro/firms/'.$this->_firmid.'/'.$plurial.'.'.$this->_format);
+        curl_setopt($curl, CURLOPT_URL, 'https://www.facturation.pro/firms/'.$this->_firmid.'/'.$plurial.'.json');
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $creation);
         curl_setopt($curl, CURLOPT_USERPWD, $this->_login.":".$this->_password);
@@ -524,7 +488,7 @@ class MonAE
         curl_setopt($curl, CURLOPT_COOKIESESSION, true);
         curl_setopt($curl, CURLOPT_SSLVERSION, 3);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-Type: application/".$this->_format));
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
 
         $return = curl_exec($curl);
         curl_close($curl);
@@ -540,12 +504,7 @@ class MonAE
         else
         {
             $array = $this->_type === "array" ? true : false;
-
-            if($this->_format === "xml")
-            {
-                $return = json_encode(new SimpleXmlElement($return));
-            }
-
+            
             return json_decode($return,$array);
         }
     }
