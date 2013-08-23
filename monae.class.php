@@ -19,7 +19,7 @@ class MonAE
         $this->set_firmid($_firmid);
         $this->set_login($_login);
         $this->set_password($_password);    
-        $this->set_type($_type);    
+        $this->set_type($_type); 
     }
     
     /**
@@ -29,7 +29,7 @@ class MonAE
      */
     private function set_firmid($_firmid)
     {
-        if(!$_firmid) { throw new MonaeException('$_firmid doit être renseigné.'); }
+        if(!$_firmid) { throw new MonaeException('Le firm id est obligatoire.'); }
         $this->_firmid = $_firmid;
     }
     
@@ -40,7 +40,7 @@ class MonAE
      */
     private function set_login($_login)
     {
-        if(!$_login) { throw new MonaeException('$_login doit être renseigné.'); }
+        if(!$_login) { throw new MonaeException('Le login est obligatoire.'); }
         $this->_login = $_login;
     }
     
@@ -51,14 +51,14 @@ class MonAE
      */ 
     private function set_password($_password)
     {
-        if(!$_password) { throw new MonaeException('$_password doit être renseigné.'); }
+        if(!$_password) { throw new MonaeException('La mot de passe est obligatoire.'); }
         $this->_password = $_password;
     }
 
     public function set_type($_type)
     {        
         if($_type !== "array" && $_type !== "object" && $_type !== false)
-            throw new MonaeException('"'.$_type.'" n\'est pas autorisé. False : retournera la reponse JSON ou XML. "array" pour avoir un tableau, "object" pour un avoir un objet.');
+            throw new MonaeException('"'.$_type.'" n\'est pas autorisé. False : retournera la reponse JSON. "array" pour avoir un tableau, "object" pour un avoir un objet.');
         
         if($_type !== false) {
             $_type = strtolower($_type);
