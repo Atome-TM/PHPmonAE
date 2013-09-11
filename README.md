@@ -1,7 +1,7 @@
 PHPmonAE
 ========
 
-Class PHP to work with the API of [Mon AE](http://monae.fr/ "Mon AE")
+PHPmonAE is class to work with the API of [Mon AE](http://monae.fr/ "Mon AE")
 
 How to use?
 -------------
