@@ -3,7 +3,7 @@ PHPmonAE
 
 Class PHP to work with the API of [Mon AE](http://monae.fr/ "Mon AE")
 
-How to use ?
+How to use?
 -------------
 
 You just have to include the file "monae.class.php" and create an instance of it.
@@ -11,7 +11,7 @@ You just have to include the file "monae.class.php" and create an instance of it
 <i>Example :</i>
 
 <pre>
-require_once("monae.class.php");
+require_once("path/to/monae.class.php");
 $monae = new MonAE("my firmid","my login","my password");
 </pre>
 
