@@ -14,7 +14,7 @@ class MonAE
      * 
      *  
      */
-    public function __construct($_firmid, $_login, $_password, $_type = false)
+    public function __construct($_firmid, $_login, $_password, $_type = 'object')
     {
         $this->set_firmid($_firmid);
         $this->set_login($_login);
