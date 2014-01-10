@@ -3,6 +3,8 @@ class MonaeException extends Exception { }
 
 class MonAE
 {
+	private $_nameApp;
+	private $_email;
     private $_firmid;
     private $_login;
     private $_password;
@@ -14,12 +16,14 @@ class MonAE
      * 
      *  
      */
-    public function __construct($_firmid, $_login, $_password, $_type = 'object')
+    public function __construct($_email, $_firmid, $_login, $_password, $_type = 'object', $_nameApp = 'MonAE app')
     {
+    	$this->set_email($_email);
         $this->set_firmid($_firmid);
         $this->set_login($_login);
         $this->set_password($_password);    
-        $this->set_type($_type); 
+        $this->set_type($_type);
+        $this->set_nameApp($_nameApp);
     }
     
     /**
@@ -66,6 +70,28 @@ class MonAE
         }
         
         $this->_type = $_type;
+    }
+
+    /**
+     * Set the email
+     * 
+     * @param String $_email
+     */
+    private function set_email($_email)
+    {
+        if(!$_email) { throw new MonaeException('L\'email est obligatoire.'); }
+        $this->_email = $_email;
+    }
+
+    /**
+     * Set the name app
+     * 
+     * @param String $_nameApp
+     */
+    private function set_nameApp($_nameApp)
+    {
+        if(!$_nameApp) { throw new MonaeException('Le nom de l\'application est obligatoire.'); }
+        $this->_nameApp = $_nameApp;
     }
     
     /**
@@ -432,6 +458,7 @@ class MonAE
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, "https://www.facturation.pro/firms/".$this->_firmid."/".$name.".json" . $url);
         curl_setopt($curl, CURLOPT_USERPWD, $this->_login.":".$this->_password);
+        curl_setopt($curl, CURLOPT_USERAGENT,'User-Agent: '.$this->_nameApp.' ('.$this->_email.')');
         curl_setopt($curl, CURLOPT_SSLVERSION, 3);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -449,6 +476,7 @@ class MonAE
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, "https://www.facturation.pro/firms/".$this->_firmid."/".$name."/".$_ID.".json");
         curl_setopt($curl, CURLOPT_USERPWD, $this->_login.":".$this->_password);
+        curl_setopt($curl, CURLOPT_USERAGENT,'User-Agent: '.$this->_nameApp.' ('.$this->_email.')');
         curl_setopt($curl, CURLOPT_SSLVERSION, 3);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -465,6 +493,7 @@ class MonAE
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, "https://www.facturation.pro/firms/".$this->_firmid."/".$name."/".$_ID.".pdf");
         curl_setopt($curl, CURLOPT_USERPWD, $this->_login.":".$this->_password);
+        curl_setopt($curl, CURLOPT_USERAGENT,'User-Agent: '.$this->_nameApp.' ('.$this->_email.')');
         curl_setopt($curl, CURLOPT_SSLVERSION, 3);
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -484,6 +513,7 @@ class MonAE
         curl_setopt($curl, CURLOPT_POST, true);
         curl_setopt($curl, CURLOPT_POSTFIELDS, $creation);
         curl_setopt($curl, CURLOPT_USERPWD, $this->_login.":".$this->_password);
+        curl_setopt($curl, CURLOPT_USERAGENT,'User-Agent: '.$this->_nameApp.' ('.$this->_email.')');
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_COOKIESESSION, true);
         curl_setopt($curl, CURLOPT_SSLVERSION, 3);
