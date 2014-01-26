@@ -2,9 +2,10 @@
 require_once("monae.class.php");
 
 try {
-	$monae = new MonAE('mail@example.com', 'FIRMID','LOGIN','PASSWORD');
+	$monae = new MonAE('email', 'firmid','login','motdepasse');
 
-	print_r($monae->getCustomers());
+	var_dump($monae->getCustomers());
+
 } catch(MonaeException $e) {
 	echo $e->getMessage();
 }
