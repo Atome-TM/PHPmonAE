@@ -16,12 +16,12 @@ class MonAE
 	 */
 	public function __construct($_email, $_firmid, $_login, $_password, $_nameApp = 'MonAE app')
 	{
-	  $this->set_email($_email);
-	  $this->set_firmid($_firmid);
-	  $this->set_login($_login);
-	  $this->set_password($_password);
-	  $this->set_nameApp($_nameApp);
-  }
+		$this->set_email($_email);
+		$this->set_firmid($_firmid);
+		$this->set_login($_login);
+		$this->set_password($_password);
+		$this->set_nameApp($_nameApp);
+	}
 
 	/**
 	 * Set the firm ID
