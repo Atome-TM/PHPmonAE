@@ -6,8 +6,6 @@ try {
 
 	var_dump($monae->getCustomers());
 
-	echo "test";
-
 } catch(MonaeException $e) {
 	echo $e->getMessage();
 }
